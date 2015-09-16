@@ -2,24 +2,32 @@
 
 ### DNS Server::
 `sudo apt-get install avahi-daemon`
+
 Local network queries now map to raspberrypi.local
 
 change hostname
+
 `sudo vim /etc/hosts`
+
 ```
 127.0.1.1           rpicast
 ```
 
 `echo "rpicast" > /etc/hostname`
+
 `sudo /etc/init.d/hostname.sh`
+
 `sudo reboot`
 
 ### Connect to WiFi::
+
 `ifconfig`
+
 `wpa_cli -p /var/run/wpa_supplicant -i wlan0 [command]`
-```
-wpa_cli
-> scan
+
+`wpa_cli`
+> ```
+scan
 scan_results
 add_network
 	0
@@ -33,8 +41,11 @@ sudo dhclient -l wlan0
 ```
 
 ### Ad Hoc Network::
+
 `sudo apt-get install isc-dhcp-server`
+
 `sudo vim /etc/default/isc-dhcp-server`
+
 ```
 # On what interfaces should the DHCP server (dhcpd) serve DHCP requests?
 # Separate multiple interfaces with spaces, e.g. "eth0 eth1".
@@ -42,6 +53,7 @@ INTERFACES="wlan0"
 ```
 
 `sudo vim /etc/dhcp/dhcpd.conf`
+
 ```
 DHCPDARGS=wlan0; # limit DHCP to the wlan0 interface
 default-lease-time 600;
@@ -64,6 +76,7 @@ host myLaptop {
 ```
 
 `sudo vim /etc/network/interfaces`
+
 ```
 # start interfaces upon start of the system
 auto lo wlan0
@@ -81,12 +94,14 @@ iface wlan0 inet manual
 ```
 
 ### WiFi vs Ad Hoc::
+
 `sudo update-rc.d -f isc-dhcp-server remove`
 
 `sudo vim /etc/rc.local`
+
 ```
 #!/bin/bash
-...
+# ...
 # RPi Network Conf Bootstrapper
  
 createAdHocNetwork(){
@@ -145,9 +160,11 @@ done <known_networks.conf
 
 
 ### Configuration Webpage::
+
 `sudo pip install flask`
 
 `sudo vim self_config.py`
+
 ```
 from flask import Flask
 app = Flask(__name__)
@@ -161,3 +178,4 @@ if __name__ == "__main__":
 ```
 
 `python self_config.py`
+
