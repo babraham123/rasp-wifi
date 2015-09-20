@@ -1,0 +1,142 @@
+### Raspberry Pi Setup
+
+On computer, flash SD card with the latest raspian OS image.
+plug in SD card
+open Disk Utility and erase card. Set the name and the format to "MS-DOS (FAT)"
+
+find a RPi OS image to use. I used 2014-06-20-wheezy-raspbian.img
+in terminal, type cmds
+
+`diskutil list`
+
+find the SD card folder, ex /dev/disk2
+
+`diskutil unmountdisk /dev/disk2`
+
+Download your pi OS image and cd to folder. Flash OS image onto card, if=source, of=target, bs=size
+
+`sudo dd if=2014-06-20-wheezy-raspbian.img of=/dev/disk2 bs=2m`
+
+Plug in peripherals, like keyboard, network cable, and power. Install [nmap](https://nmap.org/download.html#macosx) on setup computer. Use it to locate pi on network, and ssh into it.
+```
+ifconfig # get ip address
+nmap -sn 192.168.1.0/24
+ssh pi@192.168.1.88
+username= pi
+password= raspberry
+```
+
+Set password, OS size, locale, upgrade
+```
+sudo raspi-config
+username= pi
+password= typical
+# startx (for GUI)
+
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get autoremove
+```
+----------------------------
+(wifi dongle setup - wpa)
+sudo cp /etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf.bak
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+(change your ssid/passwrd)
+---
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+        ssid="your_ssid"
+        psk="your_pass"
+}
+---
+(wifi dongle setup - wep)
+network={
+        ssid="YourSSID"
+        wep_key0="password12345"
+        key_mgmt=NONE
+}
+
+
+
+(OR - wep)
+sudo nano /etc/network/interfaces
+---
+# The loopback network interface
+auto lo
+iface lo inet loopback
+ 
+# The primary (wired) network interface
+iface eth0 inet dhcp
+ 
+# The wifi (wireless) network interface
+auto wlan0
+allow-hotplug wlan0
+iface wlan0 inet dhcp
+       wireless-essid YOUR_SSID
+       wireless-key YOUR_WEP_KEY
+---
+-------------------------
+
+sudo reboot
+nmap -sn 192.168.1.0/24
+(find ip address again)
+ssh pi@192.168.1.56
+
+
+(shutdown command)
+sudo shutdown -h now
+
+-----------------
+install VNC for remote desktop
+
+sudo apt-get install tightvncserver
+
+tightvncserver :1
+(enter a password (typical), and one for view-only mode (qazwsx))
+nano /etc/rc.local (to run at boot)
+
+Connect on a Mac
+Finder >> Go >> Connect to a Server
+vnc://192.168.1.56:5901
+enter password
+
+tightvncserver -kill :1
+(kill server)
+
+-----------------
+(useful packages)
+sudo apt-get install -y gcc g++ autoconf automake build-essentials
+sudo apt-get install -y upstart
+sudo apt-get install -y unzip git vim
+---------------
+
+(configure and start project)
+
+(confirm package.json)
+
+npm install
+
+node socket_server.js
+
+----------------
+(optional: set locale)
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+sudo locale-gen en_US.UTF-8
+sudo dpkg-reconfigure locales
+
+----------------
+(optional: connect via direct ethernet)
+System Preferences >> Sharing >> Internet Sharing to Ethernet
+Connect Raspberry Pi to Mac's Ethernet port
+SSH pi@[ip address] (usually, else use 'arp -a' to get a list of IPs)
+
+-------------------
+(optional: clone SD card for backup)
+diskutil list
+sudo dd if=/dev/disk1 of=/Users/babraham/Desktop/clone1.dmg
+
+

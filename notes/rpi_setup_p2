@@ -1,0 +1,171 @@
+(install node. try different methods until node -v works)
+(currently there is an issue with ARMv6. Compile from source)
+
+(standard, option 1)
+sudo apt-get install -y nodejs npm
+
+(for debian / raspberry pi, option 2)
+sudo apt-get purge nodejs npm
+curl -sL https://deb.nodesource.com/setup | sudo bash -
+sudo apt-get install -y nodejs
+
+(heroku, option 3)
+wget http://node-arm.herokuapp.com/node_latest_armhf.deb 
+sudo dpkg -i node_latest_armhf.deb
+
+(compile from source, option 4)
+wget http://nodejs.org/dist/v0.10.35/node-v0.10.35.tar.gz
+tar -xzf node-v0.10.35.tar.gz
+cd node-v0.10.35
+./configure
+make
+sudo make install
+
+(update node)
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+
+-------------------------------------
+(install mdns dependencies)
+wget http://avahi.org/download/avahi-0.6.31.tar.gz
+tar xvf avahi-0.6.31.tar.gz
+export PTHREAD_CFLAGS='-lpthread'
+// might need libssp-dev
+sudo apt-get install intltool libglib2.0-dev libdbus-1-dev libexpat1-dev libgdbm-dev libdaemon-dev 
+
+./configure --disable-static --disable-mono --disable-monodoc --disable-gtk3 --disable-gtk --disable-qt3 --disable-python --disable-qt4 --disable-core-docs --enable-compat-libdns_sd --disable-tests --with-distro=none
+make
+sudo cp avahi-compat-libdns_sd/.libs/libdns_sd.so /usr/lib/.
+sudo cp avahi-compat-libdns_sd/dns_sd.h /usr/include/.
+
+
+--------------------------------------------
+
+>> package.json
+---
+{
+    "name" : "RPiCastProject",
+    "version" : "0.0.1",
+
+    "dependencies" : {
+        "mdns" : "2.2.2",
+        "castv2-client" : "0.0.8",
+        "lirc_node" : "0.0.1",
+        "pi-gpio" : "0.0.6"
+    }
+}
+---
+
+npm install
+
+-------------------------------------
+(homemade emitter)
+
+sudo apt-get install lirc lirc-x
+
+Add to >> /etc/modules
+----
+lirc_dev
+lirc_rpi gpio_in_pin=23 gpio_out_pin=22
+----
+
+Edit /etc/lirc/hardware.conf
+---
+# /etc/lirc/hardware.conf
+#
+# Arguments which will be used when launching lircd
+LIRCD_ARGS="--uinput"
+
+# Don't start lircmd even if there seems to be a good config file
+# START_LIRCMD=false
+
+# Don't start irexec, even if a good config file seems to exist.
+# START_IREXEC=false
+
+# Try to load appropriate kernel modules
+LOAD_MODULES=true
+
+# Run "lircd --driver=help" for a list of supported drivers.
+DRIVER="default"
+# usually /dev/lirc0 is the correct setting for systems using udev
+DEVICE="/dev/lirc0"
+MODULES="lirc_rpi"
+
+# Default configuration files for your hardware if any
+LIRCD_CONF=""
+LIRCMD_CONF=""
+
+---
+
+sudo /etc/init.d/lirc stop
+sudo /etc/init.d/lirc start
+--------------------------------------
+sudo /etc/init.d/lirc stop
+mode2 -d /dev/lirc0
+(confirm that IR signals are being detected)
+
+--------------------------------------
+(Create a new remote control configuration)
+(check for existing conf)
+/usr/share/lirc/remotes/
+
+(find valid button names)
+irrecord --list | less
+
+(start recording. follow instructions)
+sudo service lirc stop
+sudo irrecord --device=/dev/lirc0 /etc/lirc/lircd.WHATEVER_YOU_WANT.conf
+
+(add to /etc/lirc/lircd.conf)
+---
+include "/etc/lirc/lircd.WHATEVER_YOU_WANT.conf"
+---
+
+(set in /etc/lirc/hardware.conf)
+---
+REMOTE_LIRCD_CONF="/etc/lirc/lircd.WHATEVER_YOU_WANT.conf"
+---
+
+--------------------------------------
+(Test new config file)
+
+(testing: receive)
+sudo service lirc start
+irw
+(press btns on the remote and confirm that they are logged)
+
+(testing: send)
+irsend LIST yamaha ""
+irsend SEND_ONCE yamaha KEY_POWER
+
+
+--------------------------------------
+(execute commands on receive)
+
+(create /etc/lirc/lircrc)
+---
+begin
+    button = KEY_VOLUMEUP
+    prog = irexec
+    config = /usr/bin/pactl -- set-sink-volume 0 +2%  # vol+
+    repeat = 1
+end
+
+(more commands)
+---
+
+
+
+--------------------------------------
+(Emulate Chromecast)
+wget https://github.com/mauimauer/nodecast/archive/master.zip
+unzip master.zip
+cd nodecast
+node server.js --name Custom_Chromecast_Name
+http://localhost:8008
+
+-------------------------------------
+
+
+

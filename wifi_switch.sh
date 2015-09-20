@@ -1,5 +1,4 @@
 #!/bin/bash
-# ...
 # RPi Network Conf Bootstrapper
  
 createAdHocNetwork(){
@@ -11,7 +10,7 @@ createAdHocNetwork(){
     ifconfig wlan0 10.0.0.200 netmask 255.255.255.0 up
     /usr/sbin/dhcpd wlan0
     echo "Ad-hoc network created"
-    python /home/babraham/rasp-wifi/self_config.py
+    python /etc/local/scripts/rasp_wifi_config.py
 }
  
 echo "================================="
@@ -40,7 +39,7 @@ while read ssid; do
     else
         echo "Not in range, WiFi with SSID:" $ssid
     fi
-done </home/babraham/known_networks.conf
+done </etc/local/scripts/known_networks.conf
  
 if ! $connected; then
     createAdHocNetwork
