@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Engineer's Lab</title>
+  <meta name="author" content="Bereket Abraham">
+  <meta name="keywords" content="JavaScript, SocketIO" />
+  <meta name="description" content="SocketIO codelab" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/static/personal.css">
+
+  <style type="text/css">
+      canvas { border: 1px solid black; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <br />
+      <h1>A Multiplayer Light Table!</h1>
+      <br />
+      <br />
+    </div>
+    <div class="row">
+
+      <div class="col-xs-12 col-md-9">
+        <canvas id="table1" width="900" height="600">
+          This browser does not support canvas elements.
+        </canvas>
+        <br />
+      </div>
+
+      <div class="col-xs-3">
+        <br /><br />
+        <br /><br />
+        <button type="button" class="btn btn-warning" id="clearbtn">Clear</button>
+        <br /><br />
+        <button type="button" class="btn btn-info" id="otherbtn">Button</button>
+        <br /><br />
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/static/jquery-1.11.0.min.js"></script>
+  <script src="/static/bootstrap.min.js"></script>
+  <script src="/static/socket.io-1.0.6.js"></script>
+  <script src="/static/fabric.min.js"></script>
+  <script src="/table/table_client.js"></script>
+
+</body>
