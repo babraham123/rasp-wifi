@@ -9,15 +9,15 @@
 
 ## Configure wireless interface
 
+Check that the OS detects the wifi adapter, then turn it on
 ```bash
-# Check that OS detects wifi dongle
 dmesg | grep usb
 
 sudo ifdown wlan0
-sudo cp /etc/network/interfaces /etc/network/interfaces.bak
+sudo mv /etc/network/interfaces /etc/network/interfaces.bak
 sudo vim /etc/network/interfaces
 ```
-Enter this instead:
+Replace default configurations with the below:
 ```
 auto lo 
 iface lo inet loopback
@@ -44,7 +44,10 @@ sudo service hostapd restart
 ```
 
 Set your desired network name (ssid) and password (wpa_passphrase).
-`sudo vim /etc/hostapd/hostapd.conf`
+```
+sudo mv /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf.bak
+sudo vim /etc/hostapd/hostapd.conf
+```
 ```
 # Basic configuration
 interface=wlan0
@@ -69,6 +72,7 @@ hw_mode=g
 device_name=RTL8192CU
 manufacturer=Realtek
 ```
+More info on hostapd settings in `hostapd.conf.bak`
 
 ## Configure dnsmasq
 dnsmasq = DNS + DHCP
@@ -77,6 +81,7 @@ dnsmasq = DNS + DHCP
 sudo apt-get install -y dnsmasq
 echo "127.0.1.1 rasp" | sudo tee -a /etc/hosts
 
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
 sudo vim /etc/dnsmasq.conf
 ```
 ```
@@ -84,43 +89,35 @@ domain-needed
 bogus-priv
 no-resolv
 no-poll
-server=/rasp.local/192.168.10.1
 server=8.8.8.8
 server=8.8.4.4
-local=/rasp.local/
-#address=/doubleclick.net/127.0.0.1
+address=/rasp.net/192.168.10.1
 no-hosts
 addn-hosts=/etc/dnsmasq.d/hosts.conf
 expand-hosts
-domain=rasp.local
-dhcp-range=192.168.10.10,192.168.10.30,72h
-#dhcp-range=tftp,192.168.0.250,192.168.0.254  
-#hcp-host=babraham,192.168.10.21,36h
-dhcp-option=option:router,192.168.10.1
-#dhcp-option=option:ntp-server,192.168.0.5
+domain=embed.local
+dhcp-range=192.168.10.20,192.168.10.50,72h
+#dhcp-option=42,0.0.0.0
 ```
+More info on dnsmasq settings in `/etc/dnsmasq.conf.bak`
 
 ```bash
 sudo service dnsmasq restart
-sudo vim/etc/dnsmasq.d/hosts.conf
-```
-```
-192.168.10.1 rasp.local
+sudo touch /etc/dnsmasq.d/hosts.conf
 ```
 
 Test dns
 ```bash
-nslookup rasp.local localhost
-nslookup google.com localhost:8002
+nslookup rasp.net localhost
+nslookup google.com localhost
 ```
 
 ## Configure webserver
 
 ```bash
 sudo apt-get install -y nginx
-git clone git@github.com:babraham123/light-table-code.git raspsocketio
-cd raspsocketio
-git checkout ad_hoc
+git clone git@github.com:babraham123/rasp-wifi.git raspserver
+cd raspserver
 npm install
 ls node_modules
 ```
@@ -132,22 +129,22 @@ Change `worker_processes` to 1 in
 ```
 server {
     listen       80;
-    server_name  rasp.com;
+    server_name  rasp.net;
 
-    access_log  /var/log/nginx/raspserver.log;
-    error_log   /var/log/nginx/raspserver.error.log;
+    access_log  /var/log/nginx/server.log;
+    error_log   /var/log/nginx/server.error.log;
 
     location / {
-        root /home/pi/raspsocketio/static;
+        root /home/pi/raspserver/static;
     }
 }
 
 server {
     listen 8080;
-    server_name  rasp.com;
+    server_name  rasp.net;
 
-    access_log  /var/log/nginx/raspsocketio.log;
-    error_log  /var/log/nginx/raspsocketio.error.log;
+    access_log  /var/log/nginx/socketio.log;
+    error_log  /var/log/nginx/socketio.error.log;
 
     location / {
         proxy_pass http://localhost:8002;
@@ -159,7 +156,7 @@ server {
     }
 }
 ```
-More info on [socket.io settings](http://nginx.com/blog/nginx-nodejs-websockets-socketio/)
+More info on [socket.io/nginx settings](http://nginx.com/blog/nginx-nodejs-websockets-socketio/)
 
 `sudo nginx -s reload`
 
@@ -169,12 +166,13 @@ socket.io = bidirectional, event based communication
 
 ```bash
 sudo npm install forever -g
-sudo cp /home/pi/raspsocketio/setup/rasp-socketio.sh /etc/init.d/rasp-socketio
-sudo chmod a+x /etc/init.d/rasp-socketio
-sudo update-rc.d rasp-socketio defaults
 
 # test with:
 node socketio_server.js --port 8002 --debug
+
+sudo cp /home/pi/raspserver/setup/rasp-socketio.sh /etc/init.d/rasp-socketio
+sudo chmod a+x /etc/init.d/rasp-socketio
+sudo update-rc.d rasp-socketio defaults
 ```
 
 ## Start on boot 
@@ -183,6 +181,7 @@ Start up wifi and ad hoc network
 ```bash
 sudo su
 ifup wlan0
+service rasp-socketio restart
 service nginx restart
 service dnsmasq restart
 service hostapd restart
@@ -193,6 +192,11 @@ Enable on boot
 update-rc.d rasp-socketio enable
 update-rc.d nginx enable 
 update-rc.d dnsmasq enable
+ln -s /etc/init.d/hostapd /etc/rc2.d/S02hostapd
 update-rc.d hostapd enable 
 reboot
 ```
+
+On your laptop or smartphone, connect to the `raspwifi` network and go to the `rasp.net` website you setup earlier. 
+
+
