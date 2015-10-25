@@ -63,7 +63,7 @@ function processStat(stat_type, callback) {
     var command = stats[stat_type];
     if (command) {
         exec(command, function(error, stdout, stderr) {
-            callback(stat_type, convertToHtml(stdout, stderr));
+            callback(stat_type, convertToHtml(stat_type, stdout, stderr));
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
@@ -73,9 +73,10 @@ function processStat(stat_type, callback) {
     }
 }
 
-function convertToHtml(str1, str2) {
-    var msg = '<p>';
+function convertToHtml(mtype, str1, str2) {
+    var msg = '[' + stats[mtype] + ']<br><p>';
     str1 = str1.replace(/\n/g, '</p><p>');
+    str1 = str1.replace(/  /g, '&nbsp;&nbsp;');
     msg = msg + str1 + '</p><br>' + str2;
     return msg;
 }
