@@ -66,7 +66,7 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get autoremove
 sudo apt-get install -y gcc g++ autoconf automake
-sudo apt-get install -y tightvncserver unzip git vim python-pip
+sudo apt-get install -y tightvncserver unzip git vim python-pip lshw
 ```
 
 NodeJS

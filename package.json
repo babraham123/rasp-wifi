@@ -1,23 +1,22 @@
 {
-    "name" : "LightTableProject",
-    "version" : "0.3.0",
-    "description": "A socketio implementation to visualize the light table and relay web interactions to an Arduino microcontroller",
+    "name" : "RaspWiFiProject",
+    "version" : "0.1.0",
+    "description": "A set of libraries to create 2 way communication over socket.io with a PC client",
     "author": "Bereket Abraham <babraham42@gmail.com>",
 
     "dependencies" : {
         "socket.io" : "1.x",
         "express" : "3.3.x",
-        "serialport" : "1.4.6",
-        "sleep" : "x"
+        "serialport" : "1.4.6"
     },
 
     "repository": {
         "type": "git",
-        "url": "https://github.com/babraham123/light-table-code"
+        "url": "https://github.com/babraham123/rasp-wifi"
     },
     "keywords": [
         "nodejs",
-        "arduino",
+        "networking",
         "socket.io",
         "raspberry pi"
     ]
