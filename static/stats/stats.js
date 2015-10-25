@@ -33,7 +33,8 @@
         // get initial state of table
         $.each(stats, function(i, elem) {
             socket.on(elem, function(result) {
-                $('#' + elem).html(result);       
+                $('#' + elem).html('');       
+                $('#' + elem).append(result);       
             });
 
             socket.emit('get_stat', elem);
