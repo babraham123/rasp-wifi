@@ -48,7 +48,7 @@ Under the config menu, use
 ```bash
 sudo raspi-config
 # username= pi
-# password= [custom]
+# password= abcdefg123
 ```
 
 Set locality settings
