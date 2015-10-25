@@ -37,7 +37,7 @@ function processCmdLineParams() {
 }
 
 // Communication API
-// 'get_stat' => 'stat_result'
+// 'get_stat' => cmd_name
 function openSocketIOConnection() {
     io = new Server(port);
     io.on('connection', function(socket) {
@@ -63,7 +63,7 @@ function processStat(stat_type, callback) {
     var command = stats[stat_type];
     if (command) {
         exec(command, function(error, stdout, stderr) {
-            callback(stat_type, stdout + '\n' + stderr);
+            callback(stat_type, convertToHtml(stdout, stderr));
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
@@ -73,5 +73,11 @@ function processStat(stat_type, callback) {
     }
 }
 
+function convertToHtml(str1, str2) {
+    var msg = '<p>';
+    str1 = str1.replace(/\n/g, '</p><p>');
+    msg = msg + str1 + '</p><br>' + str2;
+    return msg;
+}
 
 init();
