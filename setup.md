@@ -170,7 +170,7 @@ sudo npm install forever -g
 # test with:
 node socketio_server.js --port 8002 --debug
 
-sudo cp /home/pi/raspserver/setup/rasp-socketio.sh /etc/init.d/rasp-socketio
+sudo cp /home/pi/raspserver/rasp-socketio.sh /etc/init.d/rasp-socketio
 sudo chmod a+x /etc/init.d/rasp-socketio
 sudo update-rc.d rasp-socketio defaults
 ```
