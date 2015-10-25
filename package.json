@@ -6,8 +6,7 @@
 
     "dependencies" : {
         "socket.io" : "1.x",
-        "express" : "3.3.x",
-        "serialport" : "1.4.6"
+        "express" : "3.3.x"
     },
 
     "repository": {
