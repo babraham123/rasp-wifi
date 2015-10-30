@@ -11,11 +11,6 @@ How to setup a Raspberry Pi as an access point for its own wireless network. Thi
  * Applications: media center, cloud server, smart TV, game emulator, robotics brain, cheap educational tool, home automation, etc
  * Great comumunity, including numerous blogs, tutorials and libraries
 
-#### Few projects I’ve built
- * Interactive LED table: individually addressable, multicolor LEDs
-   * Smartphone enabled TV remote: chromecast and IR commands
-   * Weather station: collection of environmental sensors
-
 #### The Problem
  * How to easily and wirelessly interact with the Pi. Even for non-interactive projects, you need to diagnose issues, check system health. 
  * Need a UI of some kind for an embedded, headless PC
@@ -60,6 +55,11 @@ Create your own local network with the Raspberry Pi as the router, DNS, and web 
  * nginx: webserving
  * socket.io: 2 way communication
  * init scripts: automatically stop and start on reboot
+
+#### Few projects I’ve built
+ * Interactive LED table: individually addressable, multicolor LEDs
+ * Smartphone enabled TV remote: chromecast and IR commands
+ * Weather station: collection of environmental sensors
 
 #### Future Improvements
  * Try a different WiFi mode. For example, ad hoc or mesh networks (multiple masters)
