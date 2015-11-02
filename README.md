@@ -1,7 +1,7 @@
 # rasp-wifi
 
 ### Title: Diagnostics and Webserving on the Raspberry Pi
-How to setup a Raspberry Pi as an access point for its own wireless network. This solves a number of problems that come up with embedded devices, including cost, portability, security, ease of use and ease of setup. The discussion below serves as a design review of some of the ways to interact with these devices.
+How to setup a Raspberry Pi as an access point for its own wireless network. The discussion below is a review on some of the ways to interact with this device.
 
 
 ### Talk Outline
